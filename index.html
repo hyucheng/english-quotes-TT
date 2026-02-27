@@ -1,0 +1,525 @@
+<html>
+<body>
+    <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .waterfall {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .water-drop {
+        position: absolute;
+        width: 2px;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+        border-radius: 50% 50% 0 0;
+        animation: waterfall 3s linear infinite;
+    }
+
+    @keyframes waterfall {
+        0% {
+            transform: translateY(-50px) scaleY(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) scaleY(1);
+            opacity: 0;
+        }
+    }
+    .container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.2em;
+        font-weight: 300;
+    }
+
+    .quote-container {
+        margin: 30px 0;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .quote-en {
+        font-size: 1.4em;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 20px;
+        font-style: italic;
+        quotes: "“" "”" "‘" "’";
+    }
+
+    .quote-en::before {
+        content: open-quote;
+        font-size: 1.5em;
+        color: #667eea;
+    }
+
+    .quote-en::after {
+        content: close-quote;
+        font-size: 1.5em;
+        color: #667eea;
+    }
+
+    .quote-cn {
+        font-size: 1.1em;
+        line-height: 1.5;
+        color: #fff;
+        border-left: 3px solid #667eea;
+        padding-left: 15px;
+        margin-top: 15px;
+        text-align: left;
+    }
+
+    .author {
+        margin-top: 20px;
+        color: #fff;
+        font-size: 0.9em;
+        font-style: italic;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    .loading {
+        color: #667eea;
+        font-size: 1.2em;
+    }
+
+    .error {
+        color: #e74c3c;
+        background: #ffeaea;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .copy-btn {
+        background: #27ae60;
+    }
+
+    .copy-btn:hover {
+        background: #219a52;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 30px 20px;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+        }
+
+        .quote-en {
+            font-size: 1.2em;
+        }
+
+        .buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+   <div> 
+    <div class="quote-container" id="quoteContainer">
+        <div class="loading">正在加载名言...</div>
+    </div>
+
+    <div class="buttons">
+        <button onclick="getNewQuote()" id="newQuoteBtn">🔄 获取新名言</button>
+        <button onclick="copyToClipboard()" id="copyBtn" class="copy-btn">📋 复制名言</button>
+    </div>
+</div>  
+</body>
+
+<script>
+    // 免费翻译函数 - 使用简单的词典映射
+    const translationDict = {
+        "the": "这",
+        "a": "一个",
+        "an": "一个",
+        "is": "是",
+        "are": "是",
+        "was": "是",
+        "were": "是",
+        "be": "是",
+        "being": "是",
+        "been": "是",
+        "have": "有",
+        "has": "有",
+        "had": "有",
+        "do": "做",
+        "does": "做",
+        "did": "做",
+        "will": "将",
+        "would": "将",
+        "could": "能",
+        "can": "能",
+        "may": "可能",
+        "might": "可能",
+        "must": "必须",
+        "should": "应该",
+        "life": "生活",
+        "love": "爱",
+        "time": "时间",
+        "work": "工作",
+        "world": "世界",
+        "people": "人们",
+        "man": "男人",
+        "woman": "女人",
+        "child": "孩子",
+        "friend": "朋友",
+        "family": "家庭",
+        "home": "家",
+        "school": "学校",
+        "book": "书",
+        "knowledge": "知识",
+        "wisdom": "智慧",
+        "success": "成功",
+        "failure": "失败",
+        "happiness": "幸福",
+        "sadness": "悲伤",
+        "fear": "恐惧",
+        "hope": "希望",
+        "dream": "梦想",
+        "goal": "目标",
+        "journey": "旅程",
+        "path": "道路",
+        "way": "方式",
+        "truth": "真理",
+        "beauty": "美丽",
+        "art": "艺术",
+        "music": "音乐",
+        "science": "科学",
+        "nature": "自然",
+        "god": "上帝",
+        "faith": "信仰",
+        "believe": "相信",
+        "think": "思考",
+        "know": "知道",
+        "understand": "理解",
+        "learn": "学习",
+        "teach": "教导",
+        "help": "帮助",
+        "give": "给予",
+        "take": "拿取",
+        "make": "制造",
+        "create": "创造",
+        "build": "建造",
+        "change": "改变",
+        "grow": "成长",
+        "become": "成为",
+        "find": "找到",
+        "lose": "失去",
+        "win": "赢得",
+        "fight": "战斗",
+        "peace": "和平",
+        "war": "战争",
+        "freedom": "自由",
+        "justice": "正义",
+        "power": "力量",
+        "money": "金钱",
+        "rich": "富有",
+        "poor": "贫穷",
+        "good": "好",
+        "bad": "坏",
+        "beautiful": "美丽的",
+        "ugly": "丑陋的",
+        "strong": "强壮的",
+        "weak": "虚弱的",
+        "smart": "聪明的",
+        "stupid": "愚蠢的",
+        "kind": "善良的",
+        "cruel": "残酷的",
+        "honest": "诚实的",
+        "brave": "勇敢的",
+        "afraid": "害怕的",
+        "happy": "快乐的",
+        "sad": "悲伤的",
+        "angry": "生气的",
+        "calm": "平静的",
+        "quick": "快速的",
+        "slow": "缓慢的",
+        "big": "大的",
+        "small": "小的",
+        "old": "老的",
+        "young": "年轻的",
+        "new": "新的",
+        "long": "长的",
+        "short": "短的",
+        "high": "高的",
+        "low": "低的",
+        "far": "远的",
+        "near": "近的",
+        "right": "正确的",
+        "wrong": "错误的",
+        "true": "真实的",
+        "false": "虚假的",
+        "easy": "容易的",
+        "difficult": "困难的",
+        "simple": "简单的",
+        "complex": "复杂的",
+        "important": "重要的",
+        "necessary": "必要的",
+        "possible": "可能的",
+        "impossible": "不可能的",
+        "better": "更好的",
+        "best": "最好的",
+        "worse": "更差的",
+        "worst": "最差的",
+        "more": "更多的",
+        "less": "更少的",
+        "most": "最多的",
+        "least": "最少的",
+        "very": "非常",
+        "quite": "相当",
+        "really": "真的",
+        "almost": "几乎",
+        "always": "总是",
+        "never": "从不",
+        "often": "经常",
+        "sometimes": "有时",
+        "usually": "通常",
+        "today": "今天",
+        "tomorrow": "明天",
+        "yesterday": "昨天",
+        "now": "现在",
+        "then": "那时",
+        "here": "这里",
+        "there": "那里",
+        "when": "当...时",
+        "where": "哪里",
+        "why": "为什么",
+        "how": "如何",
+        "what": "什么",
+        "who": "谁",
+        "which": "哪个",
+        "and": "和",
+        "but": "但是",
+        "or": "或者",
+        "so": "所以",
+        "because": "因为",
+        "if": "如果",
+        "then": "那么",
+        "while": "当...时",
+        "before": "在...之前",
+        "after": "在...之后",
+        "until": "直到",
+        "since": "自从",
+        "although": "虽然",
+        "though": "尽管",
+        "even": "甚至",
+        "only": "只有",
+        "just": "只是",
+        "also": "也",
+        "too": "也",
+        "either": "要么",
+        "neither": "既不",
+        "both": "两者都",
+        "all": "所有",
+        "every": "每个",
+        "each": "每个",
+        "some": "一些",
+        "any": "任何",
+        "no": "没有",
+        "none": "没有一个",
+        "many": "许多",
+        "much": "很多",
+        "few": "很少",
+        "little": "一点",
+        "other": "其他",
+        "another": "另一个",
+        "such": "这样的",
+        "same": "相同的",
+        "different": "不同的",
+        "first": "第一",
+        "last": "最后",
+        "next": "下一个",
+        "previous": "上一个",
+        "current": "当前的",
+        "future": "未来的",
+        "past": "过去的",
+        "present": "现在的"
+    };
+
+    // 简单的翻译函数
+    function simpleTranslate(text) {
+        const words = text.toLowerCase().split(/\s+/);
+        const translatedWords = words.map(word => {
+            // 移除标点符号
+            const cleanWord = word.replace(/[.,!?;:"]/g, '');
+            return translationDict[cleanWord] || word;
+        });
+        return translatedWords.join(' ');
+    }
+
+    // 获取名言函数
+    async function getNewQuote() {
+        const quoteContainer = document.getElementById('quoteContainer');
+        const newQuoteBtn = document.getElementById('newQuoteBtn');
+        
+        // 显示加载状态
+        quoteContainer.innerHTML = '<div class="loading">正在加载名言...</div>';
+        newQuoteBtn.disabled = true;
+        newQuoteBtn.textContent = '加载中...';
+
+        try {
+            // 调用 Quotable API
+            const response = await fetch('https://api.quotable.io/random');
+            
+            if (!response.ok) {
+                throw new Error('网络请求失败');
+            }
+            
+            const data = await response.json();
+            
+            // 生成简单的中文翻译
+            const chineseTranslation = simpleTranslate(data.content);
+            
+            // 显示名言
+            quoteContainer.innerHTML = `
+                <div class="quote-en fade-in">${data.content}</div>
+                <div class="quote-cn fade-in">${chineseTranslation}</div>
+                <div class="author fade-in">— ${data.author}</div>
+            `;
+            
+        } catch (error) {
+            console.error('获取名言失败:', error);
+            quoteContainer.innerHTML = `
+                <div class="error">
+                    获取名言失败，请检查网络连接后重试。<br>
+                    错误信息: ${error.message}
+                </div>
+            `;
+        } finally {
+            newQuoteBtn.disabled = false;
+            newQuoteBtn.textContent = '🔄 获取新名言';
+        }
+    }
+
+    // 复制到剪贴板函数
+    async function copyToClipboard() {
+        const quoteEn = document.querySelector('.quote-en');
+        const quoteCn = document.querySelector('.quote-cn');
+        const author = document.querySelector('.author');
+        
+        if (!quoteEn) {
+            alert('请先获取一条名言');
+            return;
+        }
+        
+        const textToCopy = `${quoteEn.textContent}\n${quoteCn.textContent}\n${author.textContent}`;
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            
+            // 显示复制成功提示
+            const copyBtn = document.getElementById('copyBtn');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✅ 已复制!';
+            copyBtn.style.background = '#27ae60';
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
+            
+        } catch (error) {
+            // 降级方案
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            alert('名言已复制到剪贴板！');
+        }
+    }
+
+    // 键盘快捷键
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && !event.target.matches('input, textarea')) {
+            event.preventDefault();
+            getNewQuote();
+        }
+    });
+
+    // 页面加载时自动获取名言
+    document.addEventListener('DOMContentLoaded', getNewQuote);
+</script>
+
+</html>
