@@ -1,7 +1,7 @@
 <html>
 <body>
     <style>
-    body {
+       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
@@ -11,6 +11,8 @@
         padding: 20px;
         position: relative;
         overflow: hidden;
+         font-size: 16px; /* 基准字体大小 */
+    -webkit-text-size-adjust: 100%; /* 防止iOS Safari自动调整字体 */
     }
 
     .waterfall {
@@ -47,22 +49,22 @@
         }
     }
     .container {
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
+         background: white;
+    border-radius: 20px;
+    padding: clamp(1.5rem, 5vw, 2.5rem); /* 响应式内边距 */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: min(600px, 90vw); /* 限制最大宽度 */
+    width: 100%;
+    text-align: center;
+    margin: 1rem; /* 移动端留白 */
     }
 
     h1 {
-        color: #333;
-        margin-bottom: 30px;
-        font-size: 2.2em;
-        font-weight: 300;
-    }
-
+    color: #333;
+    margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1.8rem, 6vw, 2.5rem); /* 响应式字体 */
+    font-weight: 300;
+}
     .quote-container {
         margin: 30px 0;
         min-height: 200px;
@@ -71,15 +73,14 @@
         justify-content: center;
     }
 
-    .quote-en {
-        font-size: 1.4em;
-        line-height: 1.6;
-        color: #333;
-        margin-bottom: 20px;
-        font-style: italic;
-        quotes: "“" "”" "‘" "’";
-    }
-
+    /* 英文名言优化 - 替换现有的.quote-en样式 */
+.quote-en {
+    font-size: clamp(1.1rem, 4vw, 1.4rem); /* 手机端1.1rem，桌面端1.4rem */
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    font-style: italic;
+}
     .quote-en::before {
         content: open-quote;
         font-size: 1.5em;
@@ -92,23 +93,22 @@
         color: #667eea;
     }
 
-    .quote-cn {
-        font-size: 1.1em;
-        line-height: 1.5;
-        color: #fff;
-        border-left: 3px solid #667eea;
-        padding-left: 15px;
-        margin-top: 15px;
-        text-align: left;
-    }
-
-    .author {
-        margin-top: 20px;
-        color: #fff;
-        font-size: 0.9em;
-        font-style: italic;
-    }
-
+    /* 中文翻译优化 - 替换现有的.quote-cn样式 */
+.quote-cn {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    line-height: 1.5;
+    color: #fff;
+    border-left: 3px solid #667eea;
+    padding-left: clamp(0.8rem, 3vw, 1rem);
+    margin-top: clamp(0.8rem, 2vw, 1rem);
+    text-align: left;
+}
+   .author {
+    margin-top: clamp(1rem, 3vw, 1.5rem);
+    color: #fff;
+    font-size: clamp(0.8rem, 3vw, 0.9rem);
+    font-style: italic;
+}
     .buttons {
         display: flex;
         gap: 15px;
@@ -118,15 +118,16 @@
     }
 
     button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 1em;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: clamp(0.8rem, 3vw, 1rem) clamp(1.2rem, 4vw, 1.5rem);
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    transition: all 0.3s ease;
+    min-height: 44px; /* 移动端最小触摸尺寸 */
+    -webkit-tap-highlight-color: transparent; /* 移除点击高亮 */
     }
 
     button:hover {
@@ -139,16 +140,17 @@
     }
 
     .loading {
-        color: #667eea;
-        font-size: 1.2em;
+         color: #fff;
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
     }
 
     .error {
         color: #e74c3c;
-        background: #ffeaea;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 20px 0;
+    background: #ffeaea;
+    padding: clamp(0.8rem, 3vw, 1rem);
+    border-radius: 10px;
+    margin: clamp(1rem, 3vw, 1.5rem) 0;
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
     }
 
     .copy-btn {
@@ -160,30 +162,64 @@
     }
 
     @media (max-width: 768px) {
-        .container {
-            padding: 30px 20px;
-            margin: 10px;
-        }
-
-        h1 {
-            font-size: 1.8em;
-        }
-
-        .quote-en {
-            font-size: 1.2em;
-        }
-
-        .buttons {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        button {
-            width: 100%;
-            max-width: 200px;
-        }
+    body {
+        padding: 0.5rem;
+        font-size: 14px; /* 移动端基准字体稍小 */
     }
+    
+    .container {
+        padding: 1.5rem;
+        margin: 0.5rem;
+        border-radius: 15px;
+    }
+    
+    .quote-container {
+        min-height: 150px; /* 移动端减少高度 */
+        margin: 1.5rem 0;
+    }
+    
+    .buttons {
+        gap: 0.8rem;
+        margin-top: 2rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    button {
+        padding: 1rem 1.2rem;
+        width: 100%;
+        max-width: 200px;
+    }
+}
 
+/* 超小屏幕优化（手机横屏等） */
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem;
+        margin: 0.25rem;
+        border-radius: 12px;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+    
+    .quote-en {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .quote-cn {
+        font-size: 0.85rem;
+        padding-left: 0.8rem;
+    }
+    
+    button {
+        padding: 0.9rem 1rem;
+        font-size: 0.9rem;
+    }
+}
     .fade-in {
         animation: fadeIn 0.5s ease-in;
     }
